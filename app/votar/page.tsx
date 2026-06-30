@@ -92,8 +92,8 @@ export default function VotarPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-1 items-center justify-center bg-slate-50 px-4 py-12">
-      <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+    <div className="flex min-h-screen flex-1 items-center justify-center bg-white px-4 py-12">
+      <div className="w-full max-w-lg p-8">
         <BrandHeader
           title="Avalie a sua Experiência"
           subtitle="Sua opinião nos ajuda a melhorar."
