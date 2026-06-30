@@ -15,6 +15,9 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import { supabase } from "@/lib/supabase";
 import { BrandHeader } from "@/components/BrandHeader";
 
@@ -43,6 +46,61 @@ function classificar(nota: number): "promotores" | "neutros" | "detratores" {
   if (nota >= 9) return "promotores";
   if (nota >= 7) return "neutros";
   return "detratores";
+}
+
+function formatarDataHora(iso: string): string {
+  const data = new Date(iso);
+  const dia = String(data.getDate()).padStart(2, "0");
+  const mes = String(data.getMonth() + 1).padStart(2, "0");
+  const ano = data.getFullYear();
+  const hora = String(data.getHours()).padStart(2, "0");
+  const minuto = String(data.getMinutes()).padStart(2, "0");
+  return `${dia}/${mes}/${ano} ${hora}:${minuto}`;
+}
+
+function sufixoArquivoData(): string {
+  const hoje = new Date();
+  const ano = hoje.getFullYear();
+  const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+  const dia = String(hoje.getDate()).padStart(2, "0");
+  return `${ano}-${mes}-${dia}`;
+}
+
+const COLUNAS_EXPORTACAO = [
+  "Nome",
+  "Email",
+  "Setor",
+  "KPI",
+  "Nota",
+  "Comentário",
+  "Data",
+];
+
+function linhasExportacao(respostas: RespostaNps[]): (string | number)[][] {
+  return respostas.map((r) => [
+    r.nome,
+    r.email,
+    r.setor,
+    r.kpi,
+    r.nota,
+    r.comentario ?? "",
+    formatarDataHora(r.criado_em),
+  ]);
+}
+
+const LOGO_SRC = "/LOGO-PRODUTECNICA-COR-HORIZONTAL.png";
+const LOGO_ASPECT_RATIO = 3626 / 1418;
+
+async function carregarImagemDataUrl(src: string): Promise<string> {
+  const resposta = await fetch(src);
+  const blob = await resposta.blob();
+
+  return new Promise((resolve, reject) => {
+    const leitor = new FileReader();
+    leitor.onloadend = () => resolve(leitor.result as string);
+    leitor.onerror = reject;
+    leitor.readAsDataURL(blob);
+  });
 }
 
 export default function DashboardPage() {
@@ -105,6 +163,63 @@ export default function DashboardPage() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.replace("/login");
+  };
+
+  const handleExportarExcel = () => {
+    if (respostas.length === 0) return;
+
+    const planilha = XLSX.utils.aoa_to_sheet([
+      COLUNAS_EXPORTACAO,
+      ...linhasExportacao(respostas),
+    ]);
+    const livro = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(livro, planilha, "Respostas");
+    XLSX.writeFile(livro, `relatorio-nps-${sufixoArquivoData()}.xlsx`);
+  };
+
+  const handleExportarPdf = async () => {
+    if (respostas.length === 0) return;
+
+    const doc = new jsPDF({ orientation: "landscape" });
+    const larguraPagina = doc.internal.pageSize.getWidth();
+
+    const larguraLogo = 50;
+    const alturaLogo = larguraLogo / LOGO_ASPECT_RATIO;
+    const logoX = (larguraPagina - larguraLogo) / 2;
+    const logoY = 10;
+
+    try {
+      const logoDataUrl = await carregarImagemDataUrl(LOGO_SRC);
+      doc.addImage(logoDataUrl, "PNG", logoX, logoY, larguraLogo, alturaLogo);
+    } catch {
+      // segue a exportação sem a logo caso não seja possível carregá-la
+    }
+
+    const tituloY = logoY + alturaLogo + 8;
+    doc.setFontSize(16);
+    doc.text("Relatório de NPS - Produtécnica Agro", larguraPagina / 2, tituloY, {
+      align: "center",
+    });
+
+    const dataY = tituloY + 6;
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(
+      `Gerado em: ${formatarDataHora(new Date().toISOString())}`,
+      larguraPagina / 2,
+      dataY,
+      { align: "center" }
+    );
+
+    autoTable(doc, {
+      startY: dataY + 6,
+      head: [COLUNAS_EXPORTACAO],
+      body: linhasExportacao(respostas),
+      headStyles: { fillColor: [8, 72, 151] },
+      styles: { fontSize: 8 },
+    });
+
+    doc.save(`relatorio-nps-${sufixoArquivoData()}.pdf`);
   };
 
   const stats = useMemo(() => {
@@ -306,9 +421,36 @@ export default function DashboardPage() {
         </div>
 
         <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-sm font-semibold text-slate-700">
-            Respostas Individuais
-          </h2>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-sm font-semibold text-slate-700">
+              Respostas Individuais
+            </h2>
+            <div className="flex items-center gap-2">
+              {respostas.length === 0 && (
+                <span className="text-xs text-slate-500">
+                  Não há dados para exportar.
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={handleExportarPdf}
+                disabled={respostas.length === 0}
+                style={{ backgroundColor: "#084897", color: "#ffffff" }}
+                className="rounded-lg px-3 py-1.5 text-sm font-medium transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Exportar PDF
+              </button>
+              <button
+                type="button"
+                onClick={handleExportarExcel}
+                disabled={respostas.length === 0}
+                style={{ backgroundColor: "#009b67", color: "#ffffff" }}
+                className="rounded-lg px-3 py-1.5 text-sm font-medium transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Exportar Excel
+              </button>
+            </div>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px] text-left text-sm">
               <thead>
