@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Bar,
   BarChart,
@@ -30,6 +31,8 @@ type RespostaNps = {
 
 type Status = "loading" | "success" | "error";
 
+type AuthStatus = "checking" | "authenticated";
+
 const CORES = {
   promotores: "#009b67",
   neutros: "#eab308",
@@ -43,11 +46,42 @@ function classificar(nota: number): "promotores" | "neutros" | "detratores" {
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
+  const [authStatus, setAuthStatus] = useState<AuthStatus>("checking");
   const [respostas, setRespostas] = useState<RespostaNps[]>([]);
   const [status, setStatus] = useState<Status>("loading");
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+
+      if (!data.session) {
+        router.replace("/login");
+        return;
+      }
+
+      setAuthStatus("authenticated");
+    };
+
+    checkSession();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        router.replace("/login");
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [router]);
+
+  useEffect(() => {
+    if (authStatus !== "authenticated") return;
+
     const fetchRespostas = async () => {
       setStatus("loading");
       const { data, error } = await supabase
@@ -66,7 +100,12 @@ export default function DashboardPage() {
     };
 
     fetchRespostas();
-  }, []);
+  }, [authStatus]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.replace("/login");
+  };
 
   const stats = useMemo(() => {
     const total = respostas.length;
@@ -133,6 +172,14 @@ export default function DashboardPage() {
     [stats]
   );
 
+  if (authStatus === "checking") {
+    return (
+      <div className="flex min-h-screen flex-1 items-center justify-center bg-slate-50">
+        <p className="text-sm text-slate-500">Verificando autenticação...</p>
+      </div>
+    );
+  }
+
   if (status === "loading") {
     return (
       <div className="flex min-h-screen flex-1 items-center justify-center bg-slate-50">
@@ -164,6 +211,16 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen flex-1 bg-slate-50 px-4 py-10 sm:px-8">
       <div className="mx-auto max-w-5xl">
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:border-secondary hover:text-secondary"
+          >
+            Sair
+          </button>
+        </div>
+
         <BrandHeader
           title="Dashboard de NPS"
           subtitle="Visão geral das respostas coletadas."
