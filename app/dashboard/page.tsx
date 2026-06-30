@@ -342,11 +342,11 @@ export default function DashboardPage() {
         />
 
         <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-          <Card titulo="Total de respostas" valor={stats.total} />
-          <Card titulo="NPS geral" valor={stats.nps} cor="text-primary" />
-          <Card titulo="Promotores" valor={stats.promotores} cor="text-secondary" />
+          <Card titulo="Total de Respostas" valor={stats.total} />
+          <Card titulo="NPS Geral (Pontos)" valor={stats.nps} cor="text-primary" />
+          <Card titulo="Positivos" valor={stats.promotores} cor="text-secondary" />
           <Card titulo="Neutros" valor={stats.neutros} cor="text-yellow-600" />
-          <Card titulo="Detratores" valor={stats.detratores} cor="text-red-600" />
+          <Card titulo="Negativos" valor={stats.detratores} cor="text-red-600" />
         </div>
 
         <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
