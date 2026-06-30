@@ -135,7 +135,7 @@ export default function DashboardPage() {
 
   if (status === "loading") {
     return (
-      <div className="flex flex-1 items-center justify-center bg-slate-50">
+      <div className="flex min-h-screen flex-1 items-center justify-center bg-slate-50">
         <p className="text-sm text-slate-500">Carregando dados...</p>
       </div>
     );
@@ -143,7 +143,7 @@ export default function DashboardPage() {
 
   if (status === "error") {
     return (
-      <div className="flex flex-1 items-center justify-center bg-slate-50">
+      <div className="flex min-h-screen flex-1 items-center justify-center bg-slate-50">
         <p className="rounded-lg bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
           Erro ao carregar dados: {errorMessage}
         </p>
@@ -153,7 +153,7 @@ export default function DashboardPage() {
 
   if (stats.total === 0) {
     return (
-      <div className="flex flex-1 items-center justify-center bg-slate-50">
+      <div className="flex min-h-screen flex-1 items-center justify-center bg-slate-50">
         <p className="text-sm text-slate-500">
           Ainda não há respostas registradas.
         </p>
@@ -162,7 +162,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="flex-1 bg-slate-50 px-4 py-10 sm:px-8">
+    <div className="min-h-screen flex-1 bg-slate-50 px-4 py-10 sm:px-8">
       <div className="mx-auto max-w-5xl">
         <BrandHeader
           title="Dashboard de NPS"

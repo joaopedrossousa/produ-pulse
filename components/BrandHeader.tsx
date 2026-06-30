@@ -17,7 +17,12 @@ export function BrandHeader({
         priority
         className="h-auto w-[220px]"
       />
-      <h1 className="mt-4 text-2xl font-semibold text-primary">{title}</h1>
+      <h1
+        className="mt-4 text-2xl font-semibold"
+        style={{ color: "#084897" }}
+      >
+        {title}
+      </h1>
       {subtitle && (
         <p className="mt-1 text-sm text-slate-600">{subtitle}</p>
       )}
