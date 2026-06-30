@@ -222,7 +222,7 @@ export default function VotarPage() {
               htmlFor="comentario"
               className="mb-2 block text-sm font-medium text-slate-700"
             >
-              Comentário (opcional)
+              Comentário (Opcional)
             </label>
             <textarea
               id="comentario"
@@ -254,7 +254,7 @@ export default function VotarPage() {
             style={{ backgroundColor: "#084897", color: "#ffffff" }}
             className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {status === "loading" ? "Enviando..." : "Enviar voto"}
+            {status === "loading" ? "Enviando..." : "Enviar Voto"}
           </button>
         </div>
       </div>
