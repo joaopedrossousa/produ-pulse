@@ -12,6 +12,8 @@ const KPIS = [
   "Custo-Benefício",
 ] as const;
 
+const SETORES = ["Comercial", "Administrativo", "Finanças", "Estoque"];
+
 const NOTAS = Array.from({ length: 11 }, (_, i) => i);
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -95,7 +97,7 @@ export default function VotarPage() {
     <div className="flex min-h-screen flex-1 items-center justify-center bg-white px-4 py-12">
       <div className="w-full max-w-lg p-8">
         <BrandHeader
-          title="Avalie a sua Experiência"
+          title="Avalie a sua Experiência com o Suporte de T.I"
           subtitle="Sua opinião nos ajuda a melhorar."
         />
 
@@ -153,15 +155,22 @@ export default function VotarPage() {
             >
               Setor
             </label>
-            <input
+            <select
               id="setor"
-              type="text"
               value={setor}
               onChange={(e) => setSetor(e.target.value)}
               disabled={status === "loading"}
-              placeholder="Seu setor"
               className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary/30"
-            />
+            >
+              <option value="" disabled>
+                Selecione o Setor
+              </option>
+              {SETORES.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
             {fieldErrors.setor && (
               <p className="mt-1 text-xs font-medium text-red-600">
                 {fieldErrors.setor}
