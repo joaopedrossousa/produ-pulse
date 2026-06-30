@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { BrandHeader } from "@/components/BrandHeader";
 
 const KPIS = [
   "Atendimento",
@@ -91,20 +92,18 @@ export default function VotarPage() {
   };
 
   return (
-    <div className="flex flex-1 items-center justify-center bg-zinc-50 px-4 py-12 dark:bg-black">
-      <div className="w-full max-w-lg rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-        <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-          Avalie sua experiência
-        </h1>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-          Sua opinião nos ajuda a melhorar.
-        </p>
+    <div className="flex flex-1 items-center justify-center bg-slate-50 px-4 py-12">
+      <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+        <BrandHeader
+          title="Avalie sua experiência"
+          subtitle="Sua opinião nos ajuda a melhorar."
+        />
 
         <div className="mt-6 flex flex-col gap-6">
           <div>
             <label
               htmlFor="nome"
-              className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+              className="mb-2 block text-sm font-medium text-slate-700"
             >
               Nome Completo
             </label>
@@ -115,10 +114,10 @@ export default function VotarPage() {
               onChange={(e) => setNome(e.target.value)}
               disabled={status === "loading"}
               placeholder="Seu nome"
-              className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-200 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary/30"
             />
             {fieldErrors.nome && (
-              <p className="mt-1 text-xs font-medium text-red-600 dark:text-red-400">
+              <p className="mt-1 text-xs font-medium text-red-600">
                 {fieldErrors.nome}
               </p>
             )}
@@ -127,7 +126,7 @@ export default function VotarPage() {
           <div>
             <label
               htmlFor="email"
-              className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+              className="mb-2 block text-sm font-medium text-slate-700"
             >
               Email
             </label>
@@ -138,10 +137,10 @@ export default function VotarPage() {
               onChange={(e) => setEmail(e.target.value)}
               disabled={status === "loading"}
               placeholder="voce@empresa.com"
-              className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-200 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary/30"
             />
             {fieldErrors.email && (
-              <p className="mt-1 text-xs font-medium text-red-600 dark:text-red-400">
+              <p className="mt-1 text-xs font-medium text-red-600">
                 {fieldErrors.email}
               </p>
             )}
@@ -150,7 +149,7 @@ export default function VotarPage() {
           <div>
             <label
               htmlFor="setor"
-              className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+              className="mb-2 block text-sm font-medium text-slate-700"
             >
               Setor
             </label>
@@ -161,10 +160,10 @@ export default function VotarPage() {
               onChange={(e) => setSetor(e.target.value)}
               disabled={status === "loading"}
               placeholder="Seu setor"
-              className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-200 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary/30"
             />
             {fieldErrors.setor && (
-              <p className="mt-1 text-xs font-medium text-red-600 dark:text-red-400">
+              <p className="mt-1 text-xs font-medium text-red-600">
                 {fieldErrors.setor}
               </p>
             )}
@@ -195,7 +194,7 @@ export default function VotarPage() {
           */}
 
           <div>
-            <span className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            <span className="mb-2 block text-sm font-medium text-slate-700">
               Nota (0 a 10)
             </span>
             <div className="grid grid-cols-6 gap-2 sm:grid-cols-11">
@@ -205,11 +204,12 @@ export default function VotarPage() {
                   type="button"
                   disabled={status === "loading"}
                   onClick={() => setNota(n)}
-                  className={`flex h-10 w-full items-center justify-center rounded-lg border text-sm font-medium transition-colors ${
+                  style={
                     nota === n
-                      ? "border-zinc-900 bg-zinc-900 text-white dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900"
-                      : "border-zinc-300 bg-white text-zinc-700 hover:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-500"
-                  }`}
+                      ? { backgroundColor: "#084897", borderColor: "#084897", color: "#ffffff" }
+                      : { backgroundColor: "#ffffff", borderColor: "#cbd5e1", color: "#334155" }
+                  }
+                  className="flex h-10 w-full items-center justify-center rounded-lg border text-sm font-medium transition-colors hover:border-secondary"
                 >
                   {n}
                 </button>
@@ -220,7 +220,7 @@ export default function VotarPage() {
           <div>
             <label
               htmlFor="comentario"
-              className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+              className="mb-2 block text-sm font-medium text-slate-700"
             >
               Comentário (opcional)
             </label>
@@ -231,18 +231,18 @@ export default function VotarPage() {
               disabled={status === "loading"}
               rows={3}
               placeholder="Conte um pouco mais sobre sua nota..."
-              className="w-full resize-none rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-200 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+              className="w-full resize-none rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary/30"
             />
           </div>
 
           {status === "success" && (
-            <p className="rounded-lg bg-green-50 px-3 py-2 text-sm font-medium text-green-700 dark:bg-green-950 dark:text-green-400">
+            <p className="rounded-lg border border-secondary/30 bg-secondary/10 px-3 py-2 text-sm font-medium text-secondary">
               Voto registrado, obrigado!
             </p>
           )}
 
           {status === "error" && (
-            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-700 dark:bg-red-950 dark:text-red-400">
+            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-700">
               {errorMessage || "Ocorreu um erro ao registrar seu voto."}
             </p>
           )}
@@ -251,7 +251,8 @@ export default function VotarPage() {
             type="button"
             onClick={handleSubmit}
             disabled={status === "loading"}
-            className="w-full rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+            style={{ backgroundColor: "#084897", color: "#ffffff" }}
+            className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {status === "loading" ? "Enviando..." : "Enviar voto"}
           </button>

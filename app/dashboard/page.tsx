@@ -15,6 +15,7 @@ import {
   YAxis,
 } from "recharts";
 import { supabase } from "@/lib/supabase";
+import { BrandHeader } from "@/components/BrandHeader";
 
 type RespostaNps = {
   id: string;
@@ -30,7 +31,7 @@ type RespostaNps = {
 type Status = "loading" | "success" | "error";
 
 const CORES = {
-  promotores: "#22c55e",
+  promotores: "#009b67",
   neutros: "#eab308",
   detratores: "#ef4444",
 };
@@ -125,27 +126,25 @@ export default function DashboardPage() {
 
   const dadosPizza = useMemo(
     () => [
-      { name: "Promotores", value: stats.promotores, cor: CORES.promotores },
+      { name: "Positivos", value: stats.promotores, cor: CORES.promotores },
       { name: "Neutros", value: stats.neutros, cor: CORES.neutros },
-      { name: "Detratores", value: stats.detratores, cor: CORES.detratores },
+      { name: "Negativos", value: stats.detratores, cor: CORES.detratores },
     ],
     [stats]
   );
 
   if (status === "loading") {
     return (
-      <div className="flex flex-1 items-center justify-center bg-zinc-50 dark:bg-black">
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
-          Carregando dados...
-        </p>
+      <div className="flex flex-1 items-center justify-center bg-slate-50">
+        <p className="text-sm text-slate-500">Carregando dados...</p>
       </div>
     );
   }
 
   if (status === "error") {
     return (
-      <div className="flex flex-1 items-center justify-center bg-zinc-50 dark:bg-black">
-        <p className="rounded-lg bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:bg-red-950 dark:text-red-400">
+      <div className="flex flex-1 items-center justify-center bg-slate-50">
+        <p className="rounded-lg bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
           Erro ao carregar dados: {errorMessage}
         </p>
       </div>
@@ -154,8 +153,8 @@ export default function DashboardPage() {
 
   if (stats.total === 0) {
     return (
-      <div className="flex flex-1 items-center justify-center bg-zinc-50 dark:bg-black">
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+      <div className="flex flex-1 items-center justify-center bg-slate-50">
+        <p className="text-sm text-slate-500">
           Ainda não há respostas registradas.
         </p>
       </div>
@@ -163,31 +162,29 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="flex-1 bg-zinc-50 px-4 py-10 dark:bg-black sm:px-8">
+    <div className="flex-1 bg-slate-50 px-4 py-10 sm:px-8">
       <div className="mx-auto max-w-5xl">
-        <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-          Dashboard de NPS
-        </h1>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-          Visão geral das respostas coletadas.
-        </p>
+        <BrandHeader
+          title="Dashboard de NPS"
+          subtitle="Visão geral das respostas coletadas."
+        />
 
         <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
           <Card titulo="Total de respostas" valor={stats.total} />
-          <Card titulo="NPS geral" valor={stats.nps} />
-          <Card titulo="Promotores" valor={stats.promotores} cor="text-green-600 dark:text-green-400" />
-          <Card titulo="Neutros" valor={stats.neutros} cor="text-yellow-600 dark:text-yellow-400" />
-          <Card titulo="Detratores" valor={stats.detratores} cor="text-red-600 dark:text-red-400" />
+          <Card titulo="NPS geral" valor={stats.nps} cor="text-primary" />
+          <Card titulo="Promotores" valor={stats.promotores} cor="text-secondary" />
+          <Card titulo="Neutros" valor={stats.neutros} cor="text-yellow-600" />
+          <Card titulo="Detratores" valor={stats.detratores} cor="text-red-600" />
         </div>
 
         <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-            <h2 className="mb-4 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-              Nota média por KPI
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="mb-4 text-sm font-semibold text-slate-700">
+              Nota Média NPS
             </h2>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={dadosPorKpi}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-zinc-200 dark:stroke-zinc-800" />
+                <CartesianGrid strokeDasharray="3 3" className="stroke-slate-200" />
                 <XAxis
                   dataKey="kpi"
                   tick={{ fontSize: 11 }}
@@ -198,14 +195,14 @@ export default function DashboardPage() {
                 />
                 <YAxis domain={[0, 10]} />
                 <Tooltip />
-                <Bar dataKey="notaMedia" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="notaMedia" fill="#084897" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
 
-          <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-            <h2 className="mb-4 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-              Promotores x Neutros x Detratores
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="mb-4 text-sm font-semibold text-slate-700">
+              Positivos x Neutros x Negativos
             </h2>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
@@ -228,13 +225,13 @@ export default function DashboardPage() {
             </ResponsiveContainer>
           </div>
 
-          <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 lg:col-span-2">
-            <h2 className="mb-4 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
+            <h2 className="mb-4 text-sm font-semibold text-slate-700">
               Respostas por setor
             </h2>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={dadosPorSetor}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-zinc-200 dark:stroke-zinc-800" />
+                <CartesianGrid strokeDasharray="3 3" className="stroke-slate-200" />
                 <XAxis
                   dataKey="setor"
                   tick={{ fontSize: 11 }}
@@ -245,20 +242,20 @@ export default function DashboardPage() {
                 />
                 <YAxis allowDecimals={false} />
                 <Tooltip />
-                <Bar dataKey="quantidade" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="quantidade" fill="#009b67" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        <div className="mt-8 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-          <h2 className="mb-4 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-            Respostas individuais
+        <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="mb-4 text-sm font-semibold text-slate-700">
+            Respostas Individuais
           </h2>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px] text-left text-sm">
               <thead>
-                <tr className="border-b border-zinc-200 text-xs font-medium uppercase tracking-wide text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+                <tr className="border-b border-slate-200 text-xs font-medium uppercase tracking-wide text-slate-500">
                   <th className="py-2 pr-4">Nome</th>
                   <th className="py-2 pr-4">Email</th>
                   <th className="py-2 pr-4">Setor</th>
@@ -271,7 +268,7 @@ export default function DashboardPage() {
                 {respostas.map((resposta) => (
                   <tr
                     key={resposta.id}
-                    className="border-b border-zinc-100 text-zinc-700 last:border-0 dark:border-zinc-900 dark:text-zinc-300"
+                    className="border-b border-slate-100 text-slate-700 last:border-0"
                   >
                     <td className="py-2 pr-4">{resposta.nome}</td>
                     <td className="py-2 pr-4">{resposta.email}</td>
@@ -300,9 +297,9 @@ function Card({
   cor?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-      <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">{titulo}</p>
-      <p className={`mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-50 ${cor ?? ""}`}>
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <p className="text-xs font-medium text-slate-500">{titulo}</p>
+      <p className={`mt-1 text-2xl font-semibold text-slate-900 ${cor ?? ""}`}>
         {valor}
       </p>
     </div>
