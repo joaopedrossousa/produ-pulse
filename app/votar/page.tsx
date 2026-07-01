@@ -68,6 +68,24 @@ export default function VotarPage() {
     setStatus("loading");
     setErrorMessage("");
 
+    const { data: existente, error: erroConsulta } = await supabase
+      .from("respostas_nps")
+      .select("id")
+      .ilike("email", email.trim())
+      .maybeSingle();
+
+    if (erroConsulta) {
+      setStatus("error");
+      setErrorMessage("Erro ao verificar email. Tente novamente.");
+      return;
+    }
+
+    if (existente) {
+      setStatus("error");
+      setErrorMessage("Este email já registrou uma resposta. Cada pessoa pode votar apenas uma vez.");
+      return;
+    }
+
     const { error } = await supabase.from("respostas_nps").insert({
       nome: nome.trim(),
       email: email.trim(),
@@ -78,8 +96,18 @@ export default function VotarPage() {
     });
 
     if (error) {
-      setStatus("error");
-      setErrorMessage(error.message);
+      const isDuplicado =
+        error.code === "23505" ||
+        error.message.toLowerCase().includes("duplicate") ||
+        error.message.toLowerCase().includes("unique");
+
+      if (isDuplicado) {
+        setStatus("error");
+        setErrorMessage("Este email já registrou uma resposta. Cada pessoa pode votar apenas uma vez.");
+      } else {
+        setStatus("error");
+        setErrorMessage(error.message);
+      }
       return;
     }
 
